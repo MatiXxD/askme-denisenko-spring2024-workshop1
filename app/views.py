@@ -27,8 +27,11 @@ QUESTIONS_BY_TAG = [
 ]
 
 
-ANSWERS = [ 
-    [f"Answer number {j} for question {i}" for j in range(1, 20)] 
+ANSWERS = [[
+    { 
+        "id": j,
+        "text": f"Answer number {j} for question {i}"
+    } for j in range(1, 20)] 
 for i in range(1, 100)]
 
 

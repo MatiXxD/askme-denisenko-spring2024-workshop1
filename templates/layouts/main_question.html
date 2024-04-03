@@ -4,9 +4,7 @@
     <div class="col-2">
         <div>
             <img src="{% static "images/question.jpg" %}" , class="border rounded w-100 h-100">
-            <div class="input-group flex-nowrap mt-3 w-80">
-                <input type="number" value="5" class="form-control" />
-            </div>
+            {% include "layouts/like_dislike.html" with size=16 %}
         </div>
     </div>
 

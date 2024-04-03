@@ -4,11 +4,8 @@
     <div class="row g-0">
         <div class="col-2">
             <div class="p-2 mt-2">
-                <img src="{% static "images/question.jpg" %}" class="border rounded w-100 h-100"
-                    width="80px" height="80px" />
-                <div class="input-group flex-nowrap mt-3 w-80">
-                    <input type="number" value="5" class="form-control" />
-                </div>
+                <img src="{% static "images/question.jpg" %}" class="border rounded w-100 h-100">
+                {% include "layouts/like_dislike.html" with size=16 %}
             </div>
         </div>
 
@@ -29,6 +26,6 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>  
     </div>
 </article>

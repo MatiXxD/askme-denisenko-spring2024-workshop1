@@ -15,7 +15,7 @@
         <hr>
 
         {% for answer in answers %}
-            {% include "layouts/answer.html" with answer=answer%}
+            {% include "layouts/answer.html" with answer=answer %}
         {% endfor %}
 
         {% include "layouts/paginator.html" with page_obj=answers %}
