@@ -4,7 +4,7 @@
     <div class="col-2">
         <div>
             <img src="{% static "images/question.jpg" %}" , class="border rounded w-100 h-100">
-            {% include "layouts/like_dislike.html" with size=16 %}
+            {% include "layouts/like_dislike.html" with size=16 likes=question.likes_count dislikes=question.dislikes_count%}
         </div>
     </div>
 
@@ -14,10 +14,9 @@
             <p class="mb-4">{{ question.text }}</p>
             <div>
                 <span class="me-3">Tags:</span>
-                <a href="">tag</a>
-                <a href="">tag</a>
-                <a href="">tag</a>
-                <a href="">tag</a>
+                {% for tag in question.tags.all %}
+                    <a href="{% url "list_by_tag" tag.name %}">{{tag.name}}</a>
+                {% endfor %}
             </div>
         </div>
     </div>

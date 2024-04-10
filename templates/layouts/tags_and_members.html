@@ -2,14 +2,9 @@
 
 <h3>Popular Tags</h3>
 <div>
-    <span class="badge rounded-pill text-bg-primary">Primary</span>
-    <span class="badge rounded-pill text-bg-secondary">Secondary</span>
-    <span class="badge rounded-pill text-bg-success">Success</span>
-    <span class="badge rounded-pill text-bg-danger">Danger</span>
-    <span class="badge rounded-pill text-bg-warning">Warning</span>
-    <span class="badge rounded-pill text-bg-info">Info</span>
-    <span class="badge rounded-pill text-bg-light">Light</span>
-    <span class="badge rounded-pill text-bg-dark">Dark</span>
+    {% for tag in tags %}
+        <a class="badge rounded-pill text-bg-primary" href="{% url "list_by_tag" tag.name %}">{{tag.name}}</a>
+    {% endfor %}
 </div>
 
 <h3 class="mt-5">Best Members</h3>

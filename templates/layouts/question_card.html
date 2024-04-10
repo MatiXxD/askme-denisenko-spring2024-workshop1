@@ -5,7 +5,7 @@
         <div class="col-2">
             <div class="p-2 mt-2">
                 <img src="{% static "images/question.jpg" %}" class="border rounded w-100 h-100">
-                {% include "layouts/like_dislike.html" with size=16 %}
+                {% include "layouts/like_dislike.html" with size=16 likes=question.likes_count dislikes=question.dislikes_count %}
             </div>
         </div>
 
@@ -15,14 +15,13 @@
                 <p class="card-text mb-4">{{ item.text }}</p>
                 <div class="row">
                     <div class="col-4">
-                        <a href="{% url "question" item.id %}">answer (3)</a>
+                        <a href="{% url "question" item.id %}">answer ({{item.answers_count}})</a>
                     </div>
                     <div class="col-8">
                         <span>Tags:</span>
-                        <a href="">tag</a>
-                        <a href="">tag</a>
-                        <a href="">tag</a>
-                        <a href="">tag</a>
+                        {% for tag in item.tags.all%}
+                            <a href="{% url "list_by_tag" tag.name %}">{{tag.name}}</a>
+                        {% endfor %}
                     </div>
                 </div>
             </div>

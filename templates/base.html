@@ -24,9 +24,9 @@
                 {% endblock %}
 
                 <aside class="col-4">
-
-                    {% include "layouts/tags_and_members.html" %}
-
+                    {% block tags_members %}
+                        {% include "layouts/tags_and_members.html" with tags=popular_tags %}
+                    {% endblock%}
                 </aside>
             </div>
         </div>

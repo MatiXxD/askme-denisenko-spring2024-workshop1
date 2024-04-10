@@ -4,7 +4,7 @@
     <div class="col-2 py-3">
         <div class="d-flex flex-column align-items-center">
             <img src="{% static "images/answer.jpg"%}" class="rounded w-75 h-75">
-            {% include "layouts/like_dislike.html" with size=12 %}
+            {% include "layouts/like_dislike.html" with size=12 dislikes=answer.dislikes_count likes=answer.likes_count %}
         </div>
     </div>
 

@@ -1,38 +1,6 @@
 from django.shortcuts import render
-from django.core.paginator import Paginator, PageNotAnInteger
-
-
-QUESTIONS = [
-    {
-        "id" : i,
-        "title": f"Question {i}",
-        "text": f"Some text for question {i}"
-    } for i in range(1, 100)
-]
-
-HOT_QUESTIONS = [
-    {
-        "id" : i,
-        "title": f"Question {i}",
-        "text": f"Some text for question {i}"
-    } for i in range(99, 1, -1)
-]
-
-QUESTIONS_BY_TAG = [
-    {
-        "id" : i,
-        "title": f"Question {i}",
-        "text": f"Some text for question {i}"
-    } for i in range(1, 100, 5)
-]
-
-
-ANSWERS = [[
-    { 
-        "id": j,
-        "text": f"Answer number {j} for question {i}"
-    } for j in range(1, 20)] 
-for i in range(1, 100)]
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from app.models import Question, Answer, Tag
 
 
 
@@ -43,39 +11,53 @@ def pagination(request, questions, per_page):
         page_obj = paginator.page(page_num)
     except PageNotAnInteger:
         page_obj = paginator.page(1)
-        
+    except EmptyPage:
+        page_obj = paginator.page(1)
+                
     return page_obj
     
 
 
-
 def index(request):
+    new_questions = Question.objects.new_questions()
     return render(request, template_name="index.html", 
-                  context={"questions" : pagination(request, QUESTIONS, 20)})
+                  context={"questions" : pagination(request, new_questions, 20),
+                           "popular_tags": Tag.objects.popular_tags(20)})
 
 def hot(request):
+    hot_questions = Question.objects.hot_questions()
     return render(request, template_name="hot.html", 
-                  context={"questions" : pagination(request, HOT_QUESTIONS, 20)})
+                  context={"questions" : pagination(request, hot_questions, 20),
+                           "popular_tags": Tag.objects.popular_tags(20)})
 
 def account_settings(request):
     return render(request, template_name="account_settings.html",
-                  context={"nickname" : "some_nickname"})
+                  context={"nickname" : "some_nickname",
+                           "popular_tags": Tag.objects.popular_tags(20)})
 
 def login(request):
-    return render(request, template_name="login.html")
+    return render(request, template_name="login.html",
+                  context={"popular_tags": Tag.objects.popular_tags(20)})
 
 def registration(request):
-    return render(request, template_name="registration.html")
+    return render(request, template_name="registration.html",
+                  context={"popular_tags": Tag.objects.popular_tags(20)})
 
 def list_by_tag(request, tag):
+    questions_by_tag = Question.objects.questions_by_tag(tag)
     return render(request, template_name="list_by_tag.html",
-                  context={"questions" : pagination(request, QUESTIONS_BY_TAG, 20),
-                           "tag" : tag})
+                  context={"questions" : pagination(request, questions_by_tag, 20),
+                           "tag" : tag,
+                           "popular_tags": Tag.objects.popular_tags(20)})
 
 def new_question(request):
-    return render(request, template_name="new_question.html")
+    return render(request, template_name="new_question.html",
+                  context={"popular_tags": Tag.objects.popular_tags(20)})
 
 def question(request, question_id):
+    question = Question.objects.question_by_id(question_id)
+    answers = Answer.objects.question_answers(question_id)
     return render(request, template_name="question.html",
-                  context={"question" : QUESTIONS[question_id-1],
-                           "answers" : pagination(request, ANSWERS[question_id-1], 5)})
+                  context={"question" : question,
+                           "answers" : pagination(request, answers, 5),
+                           "popular_tags": Tag.objects.popular_tags(20)})
