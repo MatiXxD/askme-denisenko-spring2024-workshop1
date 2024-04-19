@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from app.models import Question, Answer, Tag
+from django.http import Http404
 
 
 
@@ -44,7 +45,10 @@ def registration(request):
                   context={"popular_tags": Tag.objects.popular_tags(20)})
 
 def list_by_tag(request, tag):
-    questions_by_tag = Question.objects.questions_by_tag(tag)
+    try:
+        questions_by_tag = Question.objects.questions_by_tag(tag)
+    except Question.DoesNotExist:
+        raise Http404
     return render(request, template_name="list_by_tag.html",
                   context={"questions" : pagination(request, questions_by_tag, 20),
                            "tag" : tag,
@@ -55,7 +59,7 @@ def new_question(request):
                   context={"popular_tags": Tag.objects.popular_tags(20)})
 
 def question(request, question_id):
-    question = Question.objects.question_by_id(question_id)
+    question = get_object_or_404(Question, id=question_id)
     answers = Answer.objects.question_answers(question_id)
     return render(request, template_name="question.html",
                   context={"question" : question,

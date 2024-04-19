@@ -39,6 +39,9 @@ class QuestionManager(models.Manager):
         return self.order_by("-created_at")
     
     def questions_by_tag(self, tag):
+        questions = self.filter(tags__name=tag).order_by("-created_at")
+        if not questions:
+            raise Question.DoesNotExist
         return self.filter(tags__name=tag).order_by("-created_at")
     
     def hot_questions(self):
@@ -90,9 +93,15 @@ class QuestionLike(models.Model):
     is_like = models.BooleanField()
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    
+    class Meta:
+        unique_together = ["author", "question"]
 
 
 class AnswerLike(models.Model):
     is_like = models.BooleanField()
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+    
+    class Meta:
+        unique_together = ["author", "answer"]
