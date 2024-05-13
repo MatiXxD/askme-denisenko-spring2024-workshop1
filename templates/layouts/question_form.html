@@ -1,52 +1,10 @@
 {% load static %}
+{% load django_bootstrap5 %}
 
-<div class="row d-flex align-items-begin me-4">
-    <div class="col-2">
-        <h5>Title</h5>
-    </div>
-    <div class="col-10">
-        <div class="mb-3">
-            <input class="form-control is-invalid" aria-describedby="question_title">
-            <div class="invalid-feedback">
-                Enter question's title!
-            </div>                              
-        </div>
-    </div>
-</div>
-
-<div class="row d-flex align-items-begin me-4">
-    <div class="col-2">
-        <h5>Text</h5>
-    </div>
-    <div class="col-10">
-        <div class="mb-3">
-            <textarea class="form-control is-invalid" rows="12"></textarea>
-            <div class="invalid-feedback">
-                Empty text area!
-            </div>                              
-        </div>
-    </div>
-</div>
-
-<div class="row d-flex align-items-begin me-4">
-    <div class="col-2">
-        <h5>Tags</h5>
-    </div>
-    <div class="col-10">
-        <div class="mb-3">
-            <input class="form-control is-invalid" aria-describedby="tags">
-            <div class="invalid-feedback">
-                Can't use more than 3 tags!
-            </div>                              
-        </div>
-    </div>
-</div>
-
-<div class="row d-flex align-items-begin me-4">
-    <div class="col-2">
-        
-    </div>
-    <div class="col-10">
-        <button type="button" class="btn btn-light border">ASK!</button>
-    </div>
+<div class="container bg-light shadow-sm mb-3">
+    <form method="post" class="me-4">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <button type="submit" class="btn btn-light border mt-2">Ask!</button>
+    </form>
 </div>

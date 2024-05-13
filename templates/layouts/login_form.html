@@ -1,46 +1,13 @@
 {% load static %}
+{% load django_bootstrap5 %}
 
-<div>
-    <div class="row d-flex align-items-begin me-4">
-        <div class="col-lg-2 col-sm-4">
-            <h5>Login</h5>
+<div class="container bg-light shadow-sm mb-3">
+    <form method="post" class="me-4">
+        {% csrf_token %}
+        {% bootstrap_form login %}
+        <button type="submit" class="btn btn-light border">Log in!</button>
+        <div class="mt-2">
+            <a href="{% url "registration" %}">Create new account</a>
         </div>
-        <div class="col-lg-10 col-sm-8">
-            <div class="mb-4">
-                <input class="form-control is-invalid" placeholder="Enter your login here" aria-describedby="login">
-                <div class="invalid-feedback">
-                    Sorry wrong login!
-                </div>                              
-
-            </div>
-        </div>
-    </div>
-    
-    <div class="row d-flex align-items-begin me-4">
-        <div class="col-lg-2 col-sm-4">
-            <h5>Password</h5>
-        </div>
-        <div class="col-lg-10 col-sm-8">
-            <div class="mb-4">
-                <input type="password" class="form-control is-invalid" aria-describedby="password" required>
-                <div class="invalid-feedback">
-                    Sorry wrong password!
-                </div>                              
-            </div>
-        </div>
-    </div>
-    
-    <div class="row d-flex align-items-begin me-4">
-        <div class="col-lg-2 col-sm-4">
-            
-        </div>
-        <div class="col-lg-10 col-sm-8">
-            <div>
-                <button type="button" class="btn btn-light border">Log in!</button>
-            </div>
-            <div class="mt-4">
-                <a href="{% url "registration" %}">create new account</a>
-            </div>
-        </div>
-    </div>
+    </form>
 </div>

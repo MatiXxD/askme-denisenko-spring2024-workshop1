@@ -20,6 +20,10 @@
 
         {% include "layouts/paginator.html" with page_obj=answers %}
 
+        {% if user.is_authenticated %}
+        {% include "layouts/answer_form.html" with form=form %}
+        {% endif %}
+
     </div>
 
 {% endblock %}

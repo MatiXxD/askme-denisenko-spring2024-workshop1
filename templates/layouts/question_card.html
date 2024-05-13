@@ -19,7 +19,7 @@
                     </div>
                     <div class="col-8">
                         <span>Tags:</span>
-                        {% for tag in item.tags.all%}
+                        {% for tag in item.tags.all %}
                             <a href="{% url "list_by_tag" tag.name %}">{{tag.name}}</a>
                         {% endfor %}
                     </div>

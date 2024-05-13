@@ -11,16 +11,28 @@
         </form>
     
         <div class="d-flex justify-content-between gap-3">
+            {% if user.is_authenticated %}
             <div class="border rounded">
                 <img src="{% static "images/avatar.jpg" %}" width="55px" height="55px">
             </div>
             <div class="d-flex flex-column justify-content-between">
-                <div>gojosatoru</div>
+                <div>{{ user.username }}</div>
                 <div class="d-flex gap-3">
                     <a href="{% url "account_settings" %}">settings</a>
-                    <a href="">log out</a>
+                    <a href="{% url "logout" %}">log out</a>
                 </div>
             </div>
+            {% else %}
+            <div class="d-flex gap-3">
+                <div>
+                    <a href="{% url "login" %}">login</a>
+                </div>
+                <div>
+                    <a href="{% url "registration" %}">register</a>
+                </div>
+            </div>
+            {% endif %}
+            
         </div>
     </div>
 </nav>

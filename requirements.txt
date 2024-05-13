@@ -23,6 +23,7 @@ click==8.1.7
 colorama==0.4.6
 cryptography==42.0.5
 Django==5.0.3
+django-bootstrap5==24.2
 dnspython==2.6.1
 email_validator==2.1.1
 eventlet==0.34.2
@@ -102,6 +103,7 @@ rich==13.7.1
 rsa==4.9
 s3transfer==0.8.2
 SecretStorage==3.3.3
+setuptools==69.5.1
 shellingham==1.5.4
 simple-websocket==1.0.0
 six==1.16.0
