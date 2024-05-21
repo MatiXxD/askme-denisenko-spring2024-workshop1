@@ -1,5 +1,7 @@
 from django.urls import path
 from app import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -10,5 +12,11 @@ urlpatterns = [
     path("new_question/", views.new_question, name="new_question"),
     path("question/<int:question_id>/", views.question, name="question"),
     path("registration/", views.registration, name="registration"),
-    path("logout/", views.log_out, name="logout")
+    path("logout/", views.log_out, name="logout"),
+    path("<int:question_id>/like_question", views.like_question, name="like_question"),
+    path("<int:answer_id>/like_answer", views.like_answer, name="like_answer"),
+    path("<int:question_id>/<int:answer_id>/check_answer", views.check_answer, name="check_answer"),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

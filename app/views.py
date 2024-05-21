@@ -1,13 +1,16 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from app.models import Question, Answer, Tag
+from app.models import Question, Answer, Tag, Profile, QuestionLike, AnswerLike
 from django.http import Http404
 from django.contrib.auth import login, authenticate, logout
 from django.urls import reverse
 from app.forms import LoginForm, RegistrationForm, SettingsForm, QuestionForm, AnswerForm
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse
 
+import json
 
 
 def pagination(request, questions, per_page):
@@ -44,7 +47,7 @@ def account_settings(request):
     if request.method == "GET":
         form = SettingsForm()
     if request.method == "POST":
-        form = SettingsForm(request.POST)
+        form = SettingsForm(request.POST, request.FILES)
         if form.is_valid():
             form.save(user)
             return render(request, template_name="account_settings.html",
@@ -58,6 +61,9 @@ def account_settings(request):
 
 @csrf_protect
 def log_in(request):
+    if request.user.is_authenticated:
+        return redirect(reverse("account_settings"))
+    
     if request.method == "GET":
         login_form = LoginForm()
     elif request.method == "POST":
@@ -127,6 +133,7 @@ def new_question(request):
     return render(request, template_name="new_question.html",
                   context={"popular_tags": Tag.objects.popular_tags(20), "form": form})
 
+
 @csrf_protect
 def question(request, question_id):
     NUM_PER_PAGE = 5
@@ -153,4 +160,79 @@ def question(request, question_id):
                            "answers" : pagination(request, answers, NUM_PER_PAGE),
                            "popular_tags": Tag.objects.popular_tags(20),
                            "form": form})
+
+@require_http_methods(["POST"])
+@login_required()
+@csrf_protect
+def like_question(request, question_id):    
+    body = json.loads(request.body)
+    question = get_object_or_404(Question, id=question_id)
+    profile = get_object_or_404(Profile, user=request.user)
     
+    if QuestionLike.objects.filter(question=question, author=profile).exists():
+        question_like = QuestionLike.objects.get(question=question, author=profile)
+        if question_like.is_like == body["pressedLike"]:
+            Question.objects.update_score(False, question_like.is_like, question)
+            question_like.delete()
+        else:
+            Question.objects.update_score(False, question_like.is_like, question)
+            question_like.delete()
+            question_like = QuestionLike.objects.create(question=question, author=profile, is_like=body["pressedLike"])
+            Question.objects.update_score(True, body["pressedLike"], question)
+    else:
+        question_like = QuestionLike.objects.create(question=question, author=profile, is_like=body["pressedLike"])
+        Question.objects.update_score(True, body["pressedLike"], question)
+    question.save()
+        
+    body["likes_count"] = question.likes_count
+    body["dislikes_count"] = question.dislikes_count
+        
+    return JsonResponse(body)
+
+@require_http_methods(["POST"])
+@login_required()
+@csrf_protect
+def like_answer(request, answer_id):    
+    body = json.loads(request.body)
+    answer = get_object_or_404(Answer, id=answer_id)
+    profile = get_object_or_404(Profile, user=request.user)
+    
+    if AnswerLike.objects.filter(answer=answer, author=profile).exists():
+        answer_like = AnswerLike.objects.get(answer=answer, author=profile)
+        if answer_like.is_like == body["pressedLike"]:
+            Answer.objects.update_score(False, answer_like.is_like, answer)
+            answer_like.delete()
+        else:
+            Answer.objects.update_score(False, answer_like.is_like, answer)
+            answer_like.delete()
+            answer_like = AnswerLike.objects.create(answer=answer, author=profile, is_like=body["pressedLike"])
+            Answer.objects.update_score(True, body["pressedLike"], answer)
+    else:
+        answer_like = AnswerLike.objects.create(answer=answer, author=profile, is_like=body["pressedLike"])
+        Answer.objects.update_score(True, body["pressedLike"], answer)
+    answer.save()
+        
+    body["likes_count"] = answer.likes_count
+    body["dislikes_count"] = answer.dislikes_count
+        
+    return JsonResponse(body)
+
+
+@require_http_methods(["POST"])
+@login_required(redirect_field_name="continue")
+@csrf_protect
+def check_answer(request, question_id, answer_id):
+    body = json.loads(request.body)
+    question = get_object_or_404(Question, id=question_id)
+    profile = get_object_or_404(Profile, user=request.user)
+    answer = get_object_or_404(Answer, id=answer_id)
+
+    if profile != question.author:
+        body["isAuthor"] = False
+    else:
+        body["isAuthor"] = True
+        answer.is_correct = not answer.is_correct
+        print(answer.is_correct)
+        answer.save()
+
+    return JsonResponse(body)

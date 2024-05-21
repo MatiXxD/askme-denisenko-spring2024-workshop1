@@ -35,6 +35,22 @@ class Tag(models.Model):
 
 
 class QuestionManager(models.Manager):
+    def update_score(self, is_add, is_like, question):
+        if is_add:
+            if is_like:
+                question.score += 1
+                question.likes_count += 1
+            else:
+                question.score -= 1
+                question.dislikes_count += 1
+        else:
+            if is_like:
+                question.score -= 1
+                question.likes_count -= 1
+            else:
+                question.score += 1
+                question.dislikes_count -= 1
+    
     def new_questions(self):
         return self.order_by("-created_at")
     
@@ -69,6 +85,22 @@ class Question(models.Model):
 
 
 class AnswerManager(models.Manager):
+    def update_score(self, is_add, is_like, answer):
+        if is_add:
+            if is_like:
+                answer.score += 1
+                answer.likes_count += 1
+            else:
+                answer.score -= 1
+                answer.dislikes_count += 1
+        else:
+            if is_like:
+                answer.score -= 1
+                answer.likes_count -= 1
+            else:
+                answer.score += 1
+                answer.dislikes_count -= 1
+    
     def question_answers(self, question_id):
         return self.filter(question__id=question_id)
 

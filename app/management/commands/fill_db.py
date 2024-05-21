@@ -15,11 +15,11 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):
         ratio = options["ratio"]
-        # self.fill_profiles(ratio)
-        # self.fill_tags(ratio)    
-        # self.fill_questions(10*ratio)
-        # self.fill_answers(100*ratio)
-        # self.fill_likes_questions(18*ratio)
+        self.fill_profiles(ratio)
+        self.fill_tags(ratio)    
+        self.fill_questions(10*ratio)
+        self.fill_answers(100*ratio)
+        self.fill_likes_questions(18*ratio)
         self.fill_likes_answers(182*ratio)
         
         

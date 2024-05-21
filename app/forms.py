@@ -3,6 +3,8 @@ from app.models import Profile, Tag, Question, Answer
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
+from PIL import Image
+
 
 MAX_USERNAME_LENGTH = 24
 MAX_PASSWORD_LENGTH = 24
@@ -15,6 +17,10 @@ MAX_TAG_LENGTH = 24
 class LoginForm(forms.Form):
     username = forms.CharField(required=True)
     password = forms.CharField(required=True, widget=forms.PasswordInput)
+    
+    def makeInvalid(self):
+        for field in self.cleaned_data:
+            self.fields[field].widget.attrs.update({"class": "form-control is-invalid"})
     
     def clean_username(self):
         if len(self.cleaned_data["username"]) > MAX_USERNAME_LENGTH:
@@ -70,6 +76,19 @@ class RegistrationForm(forms.ModelForm):
             raise ValidationError("One of the passwords is too long")
         return self.cleaned_data["password_check"]
         
+    def clean_avatar(self):
+        if self.cleaned_data["avatar"]:
+            try:
+                img = Image.open(self.cleaned_data["avatar"])
+                img.verify()
+            except:
+                raise forms.ValidationError("File isn't an image")
+
+            if not self.cleaned_data["avatar"].content_type.startswith("image"):
+                raise forms.ValidationError("File should be an image")
+        
+        return self.cleaned_data["avatar"]
+        
     def clean(self):
         password = self.cleaned_data["password"]
         password_check = self.cleaned_data["password_check"]
@@ -119,6 +138,20 @@ class SettingsForm(forms.Form):
         
         return email
 
+    def clean_avatar(self):
+        if self.cleaned_data["avatar"]:
+            try:
+                from PIL import Image
+                img = Image.open(self.cleaned_data["avatar"])
+                img.verify()
+            except:
+                raise forms.ValidationError("File isn't an image")
+
+            if not self.cleaned_data["avatar"].content_type.startswith("image"):
+                raise forms.ValidationError("File should be an image")
+        
+        return self.cleaned_data["avatar"]
+
     
     def save(self, user):
         data = self.cleaned_data
@@ -129,6 +162,7 @@ class SettingsForm(forms.Form):
         if "email" in data and data["email"] != "":
             user.email = data["email"]
         if "avatar" in data and data["avatar"] != None:
+            profile.avatar.delete()
             profile.avatar = data["avatar"]
         
         profile.save()
@@ -145,7 +179,7 @@ class QuestionForm(forms.ModelForm):
     def clean_title(self):
         if len(self.cleaned_data["title"]) > MAX_TITLE_LENGTH:
             raise ValidationError("Title is too long")
-        return self.clean_data["title"]
+        return self.cleaned_data["title"]
 
     def clean_text(self):
         if len(self.cleaned_data["text"]) > MAX_TEXT_LENGTH:
@@ -201,9 +235,9 @@ class AnswerForm(forms.ModelForm):
         fields = ["text"]
         
     def clean_text(self):
-        if self.cleaned_data["text"] >= MAX_TEXT_LENGTH:
+        if len(self.cleaned_data["text"]) >= MAX_TEXT_LENGTH:
             raise ValidationError("Text is too long")
-        return self.clean_data["text"]
+        return self.cleaned_data["text"]
 
         
     def save(self, user, question):

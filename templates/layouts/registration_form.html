@@ -2,7 +2,7 @@
 {% load django_bootstrap5 %}
 
 <div class="container bg-light shadow-sm mb-3">
-    <form method="post" class="me-4">
+    <form method="post" enctype="multipart/form-data" class="me-4">
         {% csrf_token %}
         {% bootstrap_form form %}
         <button type="submit" class="btn btn-light border mt-2">Sign up!</button>
