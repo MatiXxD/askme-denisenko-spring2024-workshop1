@@ -50,6 +50,24 @@ class QuestionManager(models.Manager):
             else:
                 question.score += 1
                 question.dislikes_count -= 1
+                
+    def liked_question(self, question, profile, is_like):
+        if QuestionLike.objects.filter(question=question, author=profile).exists():
+            question_like = QuestionLike.objects.get(question=question, author=profile)
+            if question_like.is_like == is_like:
+                self.update_score(False, question_like.is_like, question)
+                question_like.delete()
+            else:
+                self.update_score(False, question_like.is_like, question)
+                question_like.delete()
+                question_like = QuestionLike.objects.create(question=question, author=profile, is_like=is_like)
+                self.update_score(True, is_like, question)
+        else:
+            question_like = QuestionLike.objects.create(question=question, author=profile, is_like=is_like)
+            self.update_score(True, is_like, question)
+        question.save()
+        return question
+        
     
     def new_questions(self):
         return self.order_by("-created_at")
@@ -100,6 +118,23 @@ class AnswerManager(models.Manager):
             else:
                 answer.score += 1
                 answer.dislikes_count -= 1
+    
+    def liked_answer(self, answer, profile, is_like):
+        if AnswerLike.objects.filter(answer=answer, author=profile).exists():
+            answer_like = AnswerLike.objects.get(answer=answer, author=profile)
+            if answer_like.is_like == is_like:
+                self.update_score(False, answer_like.is_like, answer)
+                answer_like.delete()
+            else:
+                self.update_score(False, answer_like.is_like, answer)
+                answer_like.delete()
+                answer_like = AnswerLike.objects.create(answer=answer, author=profile, is_like=is_like)
+                self.update_score(True, is_like, answer)
+        else:
+            answer_like = AnswerLike.objects.create(answer=answer, author=profile, is_like=is_like)
+            self.update_score(True, is_like, answer)
+        answer.save()
+        return answer
     
     def question_answers(self, question_id):
         return self.filter(question__id=question_id)

@@ -87,7 +87,7 @@ def log_out(request):
     referer = request.META.get("HTTP_REFERER")
     return redirect(referer)
 
-
+@csrf_protect
 def registration(request):
     if request.method == "GET":
         user_form = RegistrationForm()
@@ -169,20 +169,7 @@ def like_question(request, question_id):
     question = get_object_or_404(Question, id=question_id)
     profile = get_object_or_404(Profile, user=request.user)
     
-    if QuestionLike.objects.filter(question=question, author=profile).exists():
-        question_like = QuestionLike.objects.get(question=question, author=profile)
-        if question_like.is_like == body["pressedLike"]:
-            Question.objects.update_score(False, question_like.is_like, question)
-            question_like.delete()
-        else:
-            Question.objects.update_score(False, question_like.is_like, question)
-            question_like.delete()
-            question_like = QuestionLike.objects.create(question=question, author=profile, is_like=body["pressedLike"])
-            Question.objects.update_score(True, body["pressedLike"], question)
-    else:
-        question_like = QuestionLike.objects.create(question=question, author=profile, is_like=body["pressedLike"])
-        Question.objects.update_score(True, body["pressedLike"], question)
-    question.save()
+    question = Question.objects.liked_question(question, profile, body["pressedLike"])
         
     body["likes_count"] = question.likes_count
     body["dislikes_count"] = question.dislikes_count
@@ -197,20 +184,7 @@ def like_answer(request, answer_id):
     answer = get_object_or_404(Answer, id=answer_id)
     profile = get_object_or_404(Profile, user=request.user)
     
-    if AnswerLike.objects.filter(answer=answer, author=profile).exists():
-        answer_like = AnswerLike.objects.get(answer=answer, author=profile)
-        if answer_like.is_like == body["pressedLike"]:
-            Answer.objects.update_score(False, answer_like.is_like, answer)
-            answer_like.delete()
-        else:
-            Answer.objects.update_score(False, answer_like.is_like, answer)
-            answer_like.delete()
-            answer_like = AnswerLike.objects.create(answer=answer, author=profile, is_like=body["pressedLike"])
-            Answer.objects.update_score(True, body["pressedLike"], answer)
-    else:
-        answer_like = AnswerLike.objects.create(answer=answer, author=profile, is_like=body["pressedLike"])
-        Answer.objects.update_score(True, body["pressedLike"], answer)
-    answer.save()
+    answer = Answer.objects.liked_answer(answer, profile, body["pressedLike"])
         
     body["likes_count"] = answer.likes_count
     body["dislikes_count"] = answer.dislikes_count
