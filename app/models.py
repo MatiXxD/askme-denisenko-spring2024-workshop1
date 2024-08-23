@@ -5,17 +5,32 @@ from datetime import date
 import random
 
 
+class ProfileManager(models.Manager):
+    def popular_profiles(self, count=5):
+        members = list()
+        for profile in Profile.objects.all():
+            rating = 0.7*Question.objects.get_rating(profile) + 0.3*Answer.objects.get_rating(profile) 
+            members.append((rating, profile.user.username))
+    
+        members.sort(reverse=True)
+        popular_members = list()
+        for i in range(count):
+            popular_members.append(members[i][1])
+        
+        return popular_members
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     avatar = models.ImageField(null=True, blank=True)
+    
+    objects = ProfileManager()
     
     def __str__(self):
         return self.user.username
     
 
 class TagManager(models.Manager):
-    def popular_tags(self, count):
+    def popular_tags(self, count=20):
         return self.order_by("-score")[:count]
     
     def add_tags(self, tags):
@@ -50,7 +65,16 @@ class QuestionManager(models.Manager):
             else:
                 question.score += 1
                 question.dislikes_count -= 1
-                
+    
+    def get_rating(self, user):
+        user_questions = Question.objects.filter(author=user)
+        
+        rating = 0
+        for question in user_questions:
+            rating += 0.8 * question.likes_count + 0.2 * question.dislikes_count
+        
+        return rating    
+    
     def liked_question(self, question, profile, is_like):
         if QuestionLike.objects.filter(question=question, author=profile).exists():
             question_like = QuestionLike.objects.get(question=question, author=profile)
@@ -118,6 +142,16 @@ class AnswerManager(models.Manager):
             else:
                 answer.score += 1
                 answer.dislikes_count -= 1
+    
+    def get_rating(self, user):
+        user_answers = Answer.objects.filter(author=user)
+        
+        rating = 0
+        for answer in user_answers:
+            rating += 0.8 * answer.likes_count + 0.2 * answer.dislikes_count
+        
+        return rating    
+    
     
     def liked_answer(self, answer, profile, is_like):
         if AnswerLike.objects.filter(answer=answer, author=profile).exists():

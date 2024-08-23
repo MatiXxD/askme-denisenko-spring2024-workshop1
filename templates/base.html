@@ -1,43 +1,30 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.css" %}">
-    <title>AskMe</title>
-</head>
-
-<body>
-
-    {% include "layouts/navbar.html" %}
-  
-    <hr/>
-
-    <main class="container-sm-fluid container-lg mt-3">
-        <div class="container-fluid mt-3">
-            <div class="row">
-
-                {% block content %}
-                {% endblock %}
-
-                <aside class="col-4">
-                    {% block tags_members %}
-                        {% include "layouts/tags_and_members.html" with tags=popular_tags %}
-                    {% endblock%}
-                </aside>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.css" %}">
+        <title>AskMe</title>
+    </head>
+    <body>
+        {% include "layouts/navbar.html" %}
+        <hr />
+        <main class="container-sm-fluid container-lg mt-3">
+            <div class="container-fluid mt-3">
+                <div class="row">
+                    {% block content %}{% endblock %}
+                    <aside class="col-4">
+                        {% block tags_members %}
+                            {% include "layouts/tags_and_members.html" with tags=popular_tags members=popular_members %}
+                        {% endblock %}
+                    </aside>
+                </div>
             </div>
-        </div>
-    </main>
-    
-    {% include "layouts/footer.html" %}
-
-    <script src="{% static "js/like_dislike.js" %}"></script>
-    <script src="{% static "js/check_answers.js" %}"></script>
-    <script src="{% static "bootstrap/js/bootstrap.js" %}"></script>
-
-</body>
-
+        </main>
+        {% include "layouts/footer.html" %}
+        <script src="{% static "js/like_dislike.js" %}"></script>
+        <script src="{% static "js/check_answers.js" %}"></script>
+        <script src="{% static "bootstrap/js/bootstrap.js" %}"></script>
+    </body>
 </html>

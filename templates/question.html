@@ -13,6 +13,8 @@
         {% include "layouts/main_question.html" with question=question %}
         
         <hr>
+        
+        {% include "layouts/recent_answer.html" %}
 
         {% for answer in answers %}
             {% include "layouts/answer.html" with answer=answer %}
@@ -23,6 +25,15 @@
         {% if user.is_authenticated %}
         {% include "layouts/answer_form.html" with form=form %}
         {% endif %}
+        
+
+        <script>
+            let centrifugoToken = "{{ centrifugo.token }}";
+            let centrifugoUrl = "{{ centrifugo.url }}";
+            let channelName = "{{ channel_name }}"
+        </script>
+        <script src="https://unpkg.com/centrifuge@5.0.1/dist/centrifuge.js"></script>
+        <script src="{% static "js/centrifugo.js" %}"></script>
 
     </div>
 
